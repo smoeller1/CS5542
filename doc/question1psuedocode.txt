@@ -1,0 +1,30 @@
+//initialize the 2 starting matrices
+define matrixA = matrix[m,n]
+define matrixB = matrix[m,n]
+
+//initialize the returned sum array
+define sumMatrix = matrix[m,n]
+
+//populate the input matrices with whatever data they should hold
+populate(matrixA)
+populate(matrixB)
+
+//Divide the work up by row. This will require a parallelism of n.
+//Simple alternatives would be to divide work up by column with a parallelism of m,
+//divide by individual cell creating a parallelism of m times n, or
+//just run all summations in serial, eliminating parallelism. The choice will
+//largely be determined by the expected dimensions of the matrices, and the data
+//type that the matrices are storing (large, complex data types may do better
+//with more parallelism, but simple data types may do better with less overhead
+//from a little less parallelism)
+for (i = 0 to m) {
+
+  //utilize a separate, parallel processing thread for each row sumation
+  new thread(sumMatrix[i,{0 to n}] = matrixA[i,{0 to n}] + matrixB[i,{0 to n}])
+}
+
+//wait for all parallel threads to complete before proceeding
+wait for child threads
+
+//display the results
+display sumMatrix
